@@ -1,7 +1,7 @@
 # mRNA half-life
 
 Here we present a pipeline to identify newly transcribed transcripts.
-The cells were treated 4 hours with the 4sU. This is a uracil analog, which upon incorporation into newly synthesized RNA can be chemically converted to a C (we see T->C). After subsequent library prep and sequencing these conversions can be mapped back to the genome identifying newly synthesized RNAs
+The cells were treated 4 hours with the 4sU. This is a uracil analog, which upon incorporation into newly synthesized RNA can be chemically converted to a C (we observe T->C conversion in newly transcribed mRNA). After subsequent library prep and sequencing these conversions can be mapped back to the genome identifying newly synthesized RNAs
 
 A combination of bulk PAS-seq and GRAND-SLAM data analysis.
 There are several crucial steps that have to be done, listed below.
