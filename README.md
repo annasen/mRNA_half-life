@@ -22,7 +22,12 @@ for file in *fastq.gz; do mv "$file" "${file/sample_R1_/}"; done
 ```
 
 ### 2 Mapping by seq2science
-Link to seq2science documentation https://vanheeringen-lab.github.io/seq2science/index.html  
+Link to seq2science documentation https://vanheeringen-lab.github.io/seq2science/index.html   
+Download annotation/index for mapping. Current version is 107 (2022/08/16) (https://github.com/erhard-lab/gedi/wiki/Preparing-genomes)
+```
+gedi -e IndexGenome -organism homo_sapiens -version 107 -p
+```
+
 seq2science to be run as single-end on the R1 samples, the config file needs to have this adjustment when creating the BAM files (otherwise GRAND-SLAM won't be able to create a cit file):
 ```
 aligner:
@@ -34,4 +39,21 @@ aligner:
 Another thing to adjust in the config file might be removing the duplicates:
 ```
 remove_dups: true # keep duplicates (check dupRadar in the MultiQC) true if you want to remove dupl
+```
+
+### 3 GRAND-SLAM
+Link to GRAND-SLAM documentation https://github.com/erhard-lab/gedi/wiki/GRAND-SLAM  
+One needs to apply for the software at the Erhart lab first or use one I already have /vol/moldevbio/veenstra/asenovska/GRAND-SLAM/GRAND-SLAM_2.0.5f/
+1. activate a conda environment with java and generate a .cit file, use full pathways
+```
+/path/to/GRAND-SLAM_2.0.5f/gedi -e Bam2CIT -p mapped.cit /path/to/seq2scinencere/results/final_bam/*.samtools-coordinate.bam
+```
+There might be an error "No index is available for this BAM file” which means there are missing the .bai files. You can index the bam files with samtools:
+```
+samtools index *.bam
+```
+
+2. run GRAND-SLAM, -full flag to obtain Coverage and Conversion data as well
+```
+/path/to/GRAND-SLAM_2.0.5f/gedi -e Slam -full -genomic homo_sapiens.107 -prefix date_and_projectname-full/4sU -progress -plot -D -reads mapped.cit
 ```
