@@ -3,8 +3,12 @@
 Here we present a pipeline to identify newly transcribed transcripts.
 The cells were treated 4 hours with the 4sU. This is a uracil analog, which upon incorporation into newly synthesized RNA can be chemically converted to a C (we observe T->C conversion in newly transcribed mRNA). After subsequent library prep and sequencing these conversions can be mapped back to the genome identifying newly synthesized RNAs
 
-A combination of bulk PAS-seq and GRAND-SLAM data analysis.
-There are several crucial steps that have to be done, listed below.
+This workflow describes a pipeline combined by bulk PAS-seq, CEL-Seq2, and GRAND-SLAM.
+This workflow describes how to analyze data produced by a single-cell plate-based protocol inspired by PAS-seq2 and CEL-Seq2 protocols:
+> Yoon Y, Soles LV, Shi Y. PAS-seq 2: A fast and sensitive method for global profiling of polyadenylated RNAs. Methods Enzymol. 2021;655:25-35. doi: 10.1016/bs.mie.2021.03.013. Epub 2021 Apr 23. PMID: 34183125. Hashimshony, T., Senderovich, N., Avital, G. et al.
+> CEL-Seq2: sensitive highly-multiplexed single-cell RNA-Seq. Genome Biol 17, 77 (2016). https://doi.org/10.1186/s13059-016-0938-8
+> Herzog, V., Reichholf, B., Neumann, T. et al. Thiol-linked alkylation of RNA to assess expression dynamics. Nat Methods 14, 1198–1204 (2017). https://doi.org/10.1038/nmeth.4435
+
 
 ### 1 Demultiplex pooled fastq data
 The main difference from the usual config file will be the demultiplexing step. During the library preparation, in order to save reagents and time, the samples were pooled after RT reaction since each sample was already indexed by the CEL-Seq2 poly-dT primer. This step, however, requires demultiplexing on my own as bcl2fastq step takes into account only samples sorted upon the second PCR indexed primer.
