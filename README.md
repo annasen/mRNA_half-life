@@ -46,7 +46,7 @@ Link to GRAND-SLAM documentation https://github.com/erhard-lab/gedi/wiki/GRAND-S
 One needs to apply for the software at the Erhart lab first or use one I already have /vol/moldevbio/veenstra/asenovska/GRAND-SLAM/GRAND-SLAM_2.0.5f/
 1. activate a conda environment with java and generate a .cit file, use full pathways
 ```
-/path/to/GRAND-SLAM_2.0.5f/gedi -e Bam2CIT -p mapped.cit /path/to/seq2scinencere/results/final_bam/*.samtools-coordinate.bam
+/path/to/GRAND-SLAM_2.0.5f/gedi -e Bam2CIT -p mapped.cit /path/to/seq2science/results/final_bam/*.samtools-coordinate.bam
 ```
 There might be an error "No index is available for this BAM file” which means there are missing the .bai files. You can index the bam files with samtools:
 ```
