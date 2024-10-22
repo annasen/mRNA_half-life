@@ -5,7 +5,9 @@ The cells were treated 4 hours with the 4sU. This is a uracil analog, which upon
 
 This workflow combines bulk PAS-seq2, CEL-Seq2, and GRAND-SLAM.
 > Yoon Y, Soles LV, Shi Y. PAS-seq 2: A fast and sensitive method for global profiling of polyadenylated RNAs. Methods Enzymol. 2021;655:25-35. doi: 10.1016/bs.mie.2021.03.013. Epub 2021 Apr 23. PMID: 34183125. Hashimshony, T., Senderovich, N., Avital, G. et al.
+> 
 > CEL-Seq2: sensitive highly-multiplexed single-cell RNA-Seq. Genome Biol 17, 77 (2016). https://doi.org/10.1186/s13059-016-0938-8
+> 
 > Herzog, V., Reichholf, B., Neumann, T. et al. Thiol-linked alkylation of RNA to assess expression dynamics. Nat Methods 14, 1198–1204 (2017). https://doi.org/10.1038/nmeth.4435
 
 
