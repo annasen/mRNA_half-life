@@ -7,7 +7,7 @@ A combination of bulk PAS-seq and GRAND-SLAM data analysis.
 There are several crucial steps that have to be done, listed below.
 
 ### 1 Demultiplex pooled fastq data
-The main difference from the usual config file will be the demultiplexing step. During the library preparation, in order to save reagents and time, the samples were pooled after RT reaction since each sample was already indexed by the CS2 poly dT primer. This step, however, requires demultiplexing on my own as bcl2fastq step takes into account only samples sorted upon the second PCR indexed primer.
+The main difference from the usual config file will be the demultiplexing step. During the library preparation, in order to save reagents and time, the samples were pooled after RT reaction since each sample was already indexed by the CEL-Seq2 poly-dT primer. This step, however, requires demultiplexing on my own as bcl2fastq step takes into account only samples sorted upon the second PCR indexed primer.
 
 ![R2_like-CELseq2](https://github.com/user-attachments/assets/aaac2b9e-b857-4bfe-9c9a-67c74a6536de)
 
