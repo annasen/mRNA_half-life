@@ -1,0 +1,284 @@
+---
+title: "GRAND-SLAM 4sU crowdsourcing with extra -TTTTT demultiplexing"
+author: "AnnaS"
+date: "Last edited `r format (Sys.time(), '%d %B %Y')`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    number_sections: true
+    code_folding: hide
+    toc_depth: 4
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{css, echo=FALSE}
+pre {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+pre[class] {
+  max-height: 100px;
+}
+```
+
+
+## Loading the data in R
+
+```{r libraries, message=FALSE}
+library("dplyr")
+library("tidyr")
+library("ggplot2")
+library("DESeq2")
+
+experiment_nr <- "4sU"
+```
+
+Loading the counts table to check mapped reads and detected genes.
+
+```{r loading counts, message=FALSE}
+# loading the data
+data.counts <- read.table(file="/path/to/counts/GRCh38.p13-counts.tsv", sep = '\t', header = T, row.names = 1)
+data.counts.ord <- data.counts[, order(colnames(data.counts))]
+
+
+#total number of mapped reads in the pool
+data.reads.tot <- sum(data.counts.ord)
+data.reads.tot
+
+#check the number of mapped reads per sample
+data.reads.sum <-colSums(data.counts.ord)
+data.reads.sum
+barplot(data.reads.sum, main = "Number of mapped reads per sample", col = c("sienna3", "sienna3", "sienna3", "turquoise4","turquoise4","turquoise4", "navajowhite", "navajowhite", "navajowhite"), las=2, cex.names = 0.7)
+
+#check the number of detected genes per sample
+data.gene.sum <- colSums(data.counts.ord !=0)
+data.gene.sum
+barplot(data.gene.sum, main = "Number of detected genes per sample", col = c("sienna3", "sienna3", "sienna3", "turquoise4","turquoise4","turquoise4", "navajowhite", "navajowhite", "navajowhite"), las=2, cex.names = 0.7)
+
+```
+## Raw data check
+
+```{r fastq, warning=FALSE, message=FALSE}
+library(ShortRead)
+
+data_dir <- "/ceph/rimlsfnwi/data/moldevbio/veenstra/asenovska/rna_seq-pas_seq-Nextera/20230621-4sU-crowdsource-project/demultiplexed/"
+
+# Load the data names
+sample_list <- colnames(data.counts)
+
+for (i in sample_list) {
+
+file_name <- paste("sample_R2_", i, ".fastq.gz", sep="")
+file_path <- file.path(data_dir, file_name)
+
+# Load the samples dataset
+sample_load <- readFastq(file_path)
+print(paste("loading data for", i))
+
+sample_sread <- sread(sample_load)
+print(paste("working on sread for", i))
+output <- head(sample_sread)
+print(output)
+}
+```
+
+## Loading the filtered raw data in R
+
+Because the raw data do not all have 8UMI-6barcode-polyT pattern, I decided to run demultiplexing again, this time adding TTTTT to the barcode to filter the data.
+I need to run s2s and GS again.
+
+```{r loading filtered counts, message=FALSE}
+# loading the data
+data.counts <- read.table(file="/ceph/rimlsfnwi/data/moldevbio/veenstra/asenovska/rna_seq-pas_seq-Nextera/20230621-4sU-crowdsource-project/demultiplexed-TTTTT/results/counts/GRCh38.p13-counts.tsv", sep = '\t', header = T, row.names = 1)
+data.counts.ord <- data.counts[, order(colnames(data.counts))]
+
+
+#total number of mapped reads in the pool
+data.reads.tot <- sum(data.counts.ord)
+data.reads.tot
+
+#check the number of mapped reads per sample
+data.reads.sum <-colSums(data.counts.ord)
+data.reads.sum
+barplot(data.reads.sum, main = "Number of mapped reads per sample", col = c("sienna3", "sienna3", "sienna3", "turquoise4","turquoise4","turquoise4", "navajowhite", "navajowhite", "navajowhite"), las=2, cex.names = 0.7)
+
+#check the number of detected genes per sample
+data.gene.sum <- colSums(data.counts.ord !=0)
+data.gene.sum
+barplot(data.gene.sum, main = "Number of detected genes per sample", col = c("sienna3", "sienna3", "sienna3", "turquoise4","turquoise4","turquoise4", "navajowhite", "navajowhite", "navajowhite"), las=2, cex.names = 0.7)
+
+```
+
+## Filter the GS data
+
+I load all the GS data in R and extract the data on readcounts and NTR. For the readcounts I filter on genes that have more than 5 reads in all conditions
+
+```{r loading-data}
+
+# loading the data
+data.GS <- read.table(file="/GS-TTTTT_crowdsource-full/4sU.tsv", sep = '\t', header = T)
+for ( col in 1:ncol(data.GS)){
+    colnames(data.GS)[col] <-  sub("X.results.final_bam.GRCh38.p13.", "", colnames(data.GS)[col])
+}
+    
+rownames(data.GS) <- with(data.GS, paste(Gene, Symbol, sep = "_"))
+data.GS$Gene <- NULL
+data.GS$Symbol <- NULL
+
+# extracting the readcount data
+data.rc <- dplyr::select(data.GS, ends_with("Readcount"))
+rownames(data.rc) <- rownames(data.GS)
+
+for ( col in 1:ncol(data.rc)){
+    colnames(data.rc)[col] <-  sub("*.Readcount", "", colnames(data.rc)[col])
+}
+
+# Removing genes that have less than 5 RC in all conditions:
+count.tresh = 5
+amount.cells.expr = 0
+
+keep.feature <- rowSums(data.rc > count.tresh) > amount.cells.expr
+data.rc.filt <- data.rc[keep.feature,]
+
+# extracting the NTR data
+
+data.ntr <- dplyr::select(data.GS, ends_with("MAP"))
+rownames(data.ntr) <- rownames(data.GS)
+
+for ( col in 1:ncol(data.ntr)){
+    colnames(data.ntr)[col] <-  sub("*.MAP", "", colnames(data.ntr)[col])
+}
+
+data.ntr.filt <-data.ntr[keep.feature,]
+
+
+dim(data.GS)
+dim(data.rc.filt)
+dim(data.ntr.filt)
+```
+
+## Plotting readcounts and NTR per condition
+
+To get an idea about the distribution of the new-to-total ratios and readcounts, I will plot them for each sample/replicate and per condition.
+
+```{r ntr-rc-plots}
+colnames_plots <- colnames(data.ntr)
+boxplot(data.rc.filt, main = "Cells crowdsourcing", ylab = "RPM", col = c("seagreen2", "seagreen2", "seagreen2", "sienna3", "sienna3", "sienna3", "turquoise4","turquoise4","turquoise4", "navajowhite", "navajowhite", "navajowhite", "steelblue","steelblue","steelblue", "burlywood3", "burlywood3", "burlywood3","orangered3", "orangered3", "orangered3",  "plum", "plum", "plum"), outline=FALSE, names=colnames_plots, las=2, cex.axis=0.7)
+
+
+boxplot(data.ntr.filt, main = "Cells crowdsourcing", sub = "MAP = maximum posterior probability
+        NTR = new-to-total RNA ratio", ylab = "MAP of NTR",
+        col = c("seagreen2", "seagreen2", "seagreen2", "sienna3", "sienna3", "sienna3", "turquoise4","turquoise4","turquoise4", "navajowhite", "navajowhite", "navajowhite", "steelblue","steelblue","steelblue", "burlywood3", "burlywood3", "burlywood3","orangered3", "orangered3", "orangered3",  "plum", "plum", "plum"), outline=FALSE, cex.axis=0.7, las=2)
+
+filename_date <- paste(experiment_nr, Sys.Date(), "Grandslam_NTR-RC.pdf", sep = "_")
+pdf(filename_date, paper = "USr")
+
+boxplot(data.rc.filt, main = "Cells crowdsourcing expression levels", ylab = "RPM", col = c("seagreen2", "seagreen2", "seagreen2", "sienna3", "sienna3", "sienna3", "turquoise4","turquoise4","turquoise4", "navajowhite", "navajowhite", "navajowhite", "steelblue","steelblue","steelblue", "burlywood3", "burlywood3", "burlywood3","orangered3", "orangered3", "orangered3",  "plum", "plum", "plum"), outline=FALSE, cex.axis=0.7, las=2)
+
+boxplot(data.ntr.filt, main = "Cells crowdsourcing GRAND-SLAM", sub = "MAP = maximum posterior probability
+        NTR = new-to-total RNA ratio", ylab = "MAP of NTR",
+        col = c("seagreen2", "seagreen2", "seagreen2", "sienna3", "sienna3", "sienna3", "turquoise4","turquoise4","turquoise4", "navajowhite", "navajowhite", "navajowhite", "steelblue","steelblue","steelblue", "burlywood3", "burlywood3", "burlywood3","orangered3", "orangered3", "orangered3",  "plum", "plum", "plum"), outline=FALSE, cex.axis=0.7, las=2)
+
+dev.off()
+```
+
+```{r violin-NTR, warning=FALSE}
+
+library(tibble)
+library(dplyr)
+library(tidyr)
+
+ntr.long<- data.ntr.filt %>%
+  rownames_to_column(var = "genes") %>%
+  pivot_longer(-genes, names_to = "sample", values_to = "ntr")
+
+ntr.long$treatment <- ntr.long$treatment <- ifelse(grepl("4sU",ntr.long$sample),"4sU",
+                             ifelse(grepl("vehicle", ntr.long$sample),"vehicle",
+                                                        "Other"))
+
+ggplot(ntr.long, aes(x=sample, y=ntr, fill=sample)) + geom_violin() + geom_boxplot(width=0.1) + theme(legend.position = "none") + labs(title = "Distribution new-to-total ratio per treatment", y = "New-to-total ratio") + theme(axis.text.x = element_text(size=6, angle = 90, vjust = 0.5, hjust=1))
+
+ggplot(ntr.long, aes(x=sample, y=ntr, fill=sample)) + geom_violin() + theme(legend.position = "none") + labs(title = "Distribution new-to-total ratio per treatment", y = "New-to-total ratio") + theme(axis.text.x = element_text(size=6, angle = 90, vjust = 0.5, hjust=1))
+```
+
+## Conversion plot 
+
+```{r conversion-NTR, warning=FALSE}
+#Conversion rate plots
+# extracting the Conversion and Coverage data, removing Double.Hit.Coverage columns
+
+data.conv <- dplyr::select(data.GS, ends_with(c("Conversions")))
+
+#remove word Conversion
+for ( col in 1:ncol(data.conv)){
+    colnames(data.conv)[col] <-  sub("*.Conversions", "", colnames(data.rc)[col])
+}
+
+rownames(data.conv) <- rownames(data.GS)
+
+conv.filt <-data.conv[keep.feature,]
+
+conv.long<- conv.filt %>%
+  rownames_to_column(var = "genes") %>%
+  pivot_longer(-genes, names_to = "sample", values_to = "conv")
+
+
+ggplot(conv.long, aes(x=sample, y=conv, fill=sample)) + geom_violin() + geom_boxplot(width=0.1) + theme(legend.position = "none")+ labs(title = "Distribution Conversion", subtitle = "Conversion: total nr of conversions in a particular gene", y = "Conversion") + theme(axis.text.x = element_text(size=6, angle = 90, vjust = 0.5, hjust=1))
+
+ggplot(conv.long, aes(x=sample, y=conv, fill=sample)) + geom_violin() + theme(legend.position = "none") + labs(title = "Distribution Conversion", subtitle = "Conversion: total nr of conversions in a particular gene", y = "Conversion") + theme(axis.text.x = element_text(size=6, angle = 90, vjust = 0.5, hjust=1))
+
+```
+
+## Coverage plot 
+
+```{r coverage-NTR, warning=FALSE}
+#Coverage plots
+# extracting the Coverage data, removing Double.Hit.Coverage columns
+
+data.cov.all <- dplyr::select(data.GS, ends_with(c("Coverage")))
+data.cov <- data.cov.all %>% select(-ends_with("Double.Hit.Coverage"))
+
+#remove word Coverage
+for ( col in 1:ncol(data.cov)){
+    colnames(data.cov)[col] <-  sub("*.Coverage", "", colnames(data.rc)[col])
+}
+
+rownames(data.cov) <- rownames(data.GS)
+
+cov.filt <-data.cov[keep.feature,]
+
+cov.long<- cov.filt %>%
+  rownames_to_column(var = "genes") %>%
+  pivot_longer(-genes, names_to = "sample", values_to = "cov")
+
+
+ggplot(cov.long, aes(x=sample, y=cov, fill=sample)) + geom_violin() + geom_boxplot(width=0.1) + theme(legend.position = "none") + labs(title = "Coverage", subtitle = "Coverage: total nr of U covered by any reads", y = "Coverage") + theme(axis.text.x = element_text(size=6, angle = 90, vjust = 0.5, hjust=1))
+
+ggplot(cov.long, aes(x=sample, y=cov, fill=sample)) + geom_violin() + theme(legend.position = "none") + labs(title = "Coverage", subtitle = "Coverage: total nr of U covered by any reads", y = "Coverage") + theme(axis.text.x = element_text(size=6, angle = 90, vjust = 0.5, hjust=1))
+
+```
+
+## Fraction of Conversion and Coverage
+
+```{r fraction-NTR, warning=FALSE}
+
+#Fraction of Conversion and Coverage
+data.frac <- data.conv/data.cov
+
+#rownames(data.frac) <- rownames(data.GS)
+
+data.frac.filt <-data.frac[keep.feature,]
+
+frac.filt.long<- data.frac.filt %>%
+  rownames_to_column(var = "genes") %>%
+  pivot_longer(-genes, names_to = "sample", values_to = "fraction")
+
+ggplot(frac.filt.long, aes(x=sample, y=fraction, fill=sample)) + geom_violin() + geom_boxplot(width=0.1) + theme(legend.position = "none") + labs(title = "Fraction Conversion and Coverage per treatment", subtitle = "Conversion: total nr of conversions in a particular gene, Coverage: total nr of U covered by any reads", y = "Conversion and Coverage") + theme(axis.text.x = element_text(size=6, angle = 90, vjust = 0.5, hjust=1))
+
+ggplot(frac.filt.long, aes(x=sample, y=fraction, fill=sample)) + geom_violin() + theme(legend.position = "none") + labs(title = "Fraction Conversion and Coverage per treatment", subtitle = "Conversion: total nr of conversions in a particular gene, Coverage: total nr of U covered by any reads", y = "Conversion and Coverage") + theme(axis.text.x = element_text(size=6, angle = 90, vjust = 0.5, hjust=1))
+```
