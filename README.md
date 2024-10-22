@@ -22,7 +22,7 @@ for file in *fastq.gz; do mv "$file" "${file/sample_R1_/}"; done
 ```
 
 ### 2 Mapping by seq2science
-Link to seq2science documentation https://vanheeringen-lab.github.io/seq2science/index.html
+Link to seq2science documentation https://vanheeringen-lab.github.io/seq2science/index.html  
 seq2science to be run as single-end on the R1 samples, the config file needs to have this adjustment when creating the BAM files (otherwise GRAND-SLAM won't be able to create a cit file):
 ```
 aligner:
