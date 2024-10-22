@@ -11,7 +11,7 @@ The main difference from the usual config file will be the demultiplexing step. 
 
 ![R2_like-CELseq2](https://github.com/user-attachments/assets/aaac2b9e-b857-4bfe-9c9a-67c74a6536de)
 
-I used the demultiplex package in my bash_env, I listed first R2 file as that is the place where the barcodes are stored (see in the picture, 8nt UMI, 6nt cell barcode, polyT). https://demultiplex.readthedocs.io/en/latest/usage.html
+I used the demultiplex package in my bash_env, I listed first R2 file as that is the place where the barcodes are stored (see in the picture, 8nt UMI, 6nt cell barcode, polyT). https://demultiplex.readthedocs.io/en/latest/usage.html Depending on the original fastq.gz size, the command can take some time. I recommend using screen command. There might be quite a big file sample_R*_UNKNOWN.fastq.gz.
 ```
 demultiplex demux -r -s 9 -e 14 barcodes.tsv sample_R2.fastq.gz sample_R1.fastq.gz
 ```
@@ -21,11 +21,16 @@ The demultiplexed R1 sequences can be copied into a new folder. In order to get 
 for file in *fastq.gz; do mv "$file" "${file/sample_R1_/}"; done
 ```
 
-### 2 seq2science
+### 2 Mapping by seq2science
 seq2science to be run as single-end, the config file needs to have this adjustment for the aligner:
 ```
 aligner:
   star:
     index: '--limitGenomeGenerateRAM 37000000000 --genomeSAsparseD 1'
     align: '--outSAMattributes MD NH'
+```
+
+Another thing to adjust in the config file might be removing the duplicates:
+```
+remove_dups: true # keep duplicates (check dupRadar in the MultiQC) true if you want to remove dupl
 ```
