@@ -69,13 +69,13 @@ samtools index *.bam
 The grandslam command generates multiple files which provide a first glance into the quality of the data in a pdf file. For the following analysis steps I will mainly focus on the generated .tsv file. This files contains per gene information with columns referring to a number of statistics that have been generated per treatment.
 The description of all statistics can be found here: https://github.com/erhard-lab/gedi/wiki/GRAND-SLAM
 
-Categories used in this experiment:
-  1. Gene
-  2. Symbol
-  3. Readcount : The total number of reads mapped to this gene in condition
-  4. MAP : The mode of the posterior distribution for the NTR (this should usually be used as the NTR)
-  5. Conversions: The total number of conversions in this gene
-  6. Coverage: The total number of U covered by any reads (if all U were converted, the Conversions=Coverage)
+  Categories used in this experiment:
+    1. Gene
+    2. Symbol
+    3. Readcount : The total number of reads mapped to this gene in condition
+    4. MAP : The mode of the posterior distribution for the NTR (this should usually be used as the NTR)
+    5. Conversions: The total number of conversions in this gene
+    6. Coverage: The total number of U covered by any reads (if all U were converted, the Conversions=Coverage)
 
 ### 4 Analysis in R
 Script attached
