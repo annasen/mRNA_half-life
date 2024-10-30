@@ -15,7 +15,7 @@ This workflow combines bulk **PAS-seq2, CEL-Seq2, and GRAND-SLAM**.
 
 
 ### 1 Demultiplex pooled fastq data
-The main difference from the usual config file will be the demultiplexing step. During the library preparation, in order to save reagents and time, the samples were pooled after RT reaction since each sample was already indexed by the CEL-Seq2 poly-dT primer. This step, however, requires demultiplexing on my own as bcl2fastq step takes into account only samples sorted upon the second PCR indexed primer.
+During the library preparation, in order to save reagents and time, the samples were pooled after RT reaction since each sample was already indexed by the CEL-Seq2 poly-dT primer. This step, however, requires demultiplexing on our own as bcl2fastq step takes into account only samples sorted upon the second PCR indexed primer.
 
 ![R2_like-CELseq2](https://github.com/user-attachments/assets/aaac2b9e-b857-4bfe-9c9a-67c74a6536de)
 
@@ -26,7 +26,7 @@ There might be quite a big file sample_R*_UNKNOWN.fastq.gz.
 demultiplex demux -r -s 9 -e 14 barcodes.tsv sample_R2.fastq.gz sample_R1.fastq.gz
 ```
 
-The demultiplexed R1 sequences can be copied into a new folder. In order to get rid off the "sample_R1_" at the beginning of each (for clarity and for seq2science to run the pipeline as single-end), one can use this bash loop below:
+The demultiplexed R1 sequences can be copied into a new folder because we will be using only R1 reads (as shown in the picture above, R2 reads contain only few nucleotides of the actual sequence at the very end, so we will not use them anymore, their main role was about having the cell barcode for demultiplexing). In order to get rid off the "sample_R1_" at the beginning of each (for clarity and for seq2science to run the pipeline as single-end), one can use this bash loop below:
 ```
 for file in *fastq.gz; do mv "$file" "${file/sample_R1_/}"; done
 ```
