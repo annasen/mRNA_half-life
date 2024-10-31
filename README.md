@@ -1,6 +1,6 @@
 # mRNA half-life
 
-Here we present a pipeline to identify newly transcribed transcripts.
+Here we present a pipeline to identify newly transcribed mRNA.
 The cells were treated 4 hours with the 4sU. This is a uracil analog, which upon incorporation into newly synthesized RNA can be chemically converted to a C (we observe T->C conversion in newly transcribed mRNA). After subsequent library prep and sequencing these conversions can be mapped back to the genome identifying newly synthesized RNAs
 
 ![image](https://github.com/user-attachments/assets/a8ac81bb-2ed1-432f-8f18-06f554201543)  
