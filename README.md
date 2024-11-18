@@ -83,4 +83,4 @@ The description of all statistics can be found here: https://github.com/erhard-l
     6. Coverage: The total number of U covered by any reads (if all U were converted, the Conversions=Coverage)
 
 ### 4 Analysis in R
-Script attached, see the grandslam-4sU.Rmd file.
+Script attached, see the _grandslam-4sU.Rmd_ file.
