@@ -39,10 +39,7 @@ Note: In shallow seq low RNA-quality experiments, the sorted fastq files can sti
 
 ### 2 Mapping by seq2science
 Link to seq2science documentation https://vanheeringen-lab.github.io/seq2science/index.html   
-Download annotation/index for mapping. Current version is 107 (2022/08/16) (https://github.com/erhard-lab/gedi/wiki/Preparing-genomes)
-```
-gedi -e IndexGenome -organism homo_sapiens -version 107 -p
-```
+
 
 seq2science to be run as single-end on the R1 samples, the config file needs to have this adjustment when creating the BAM files (otherwise GRAND-SLAM won't be able to create a cit file):
 ```
@@ -59,7 +56,12 @@ remove_dups: true # keep duplicates (check dupRadar in the MultiQC) true if you 
 
 ### 3 GRAND-SLAM
 Link to GRAND-SLAM documentation https://github.com/erhard-lab/gedi/wiki/GRAND-SLAM  
-One needs to apply for the software at the Erhart lab first or use one I already have /vol/moldevbio/veenstra/asenovska/GRAND-SLAM/GRAND-SLAM_2.0.5f/
+One needs to apply for the software at the Erhart lab first (takes around 2 weeks) or use one I already have `/vol/moldevbio/veenstra/asenovska/GRAND-SLAM/GRAND-SLAM_2.0.5f/`
+First time users need to download annotation/index for mapping. Current version is 107 (2022/08/16) (https://github.com/erhard-lab/gedi/wiki/Preparing-genomes)
+```
+gedi -e IndexGenome -organism homo_sapiens -version 107 -p
+```
+
 1. activate a conda environment with java and generate a .cit file, use full pathways
 ```
 /path/to/GRAND-SLAM_2.0.5f/gedi -e Bam2CIT -p mapped.cit /path/to/seq2science/results/final_bam/*.samtools-coordinate.bam
