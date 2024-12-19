@@ -12,6 +12,8 @@ This workflow combines bulk **PAS-seq2, CEL-Seq2, and GRAND-SLAM**.
 > CEL-Seq2: sensitive highly-multiplexed single-cell RNA-Seq. Genome Biol 17, 77 (2016). https://doi.org/10.1186/s13059-016-0938-8
 > 
 > Herzog, V., Reichholf, B., Neumann, T. et al. Thiol-linked alkylation of RNA to assess expression dynamics. Nat Methods 14, 1198–1204 (2017). https://doi.org/10.1038/nmeth.4435
+>
+> https://github.com/erhard-lab/gedi/wiki/GRAND-SLAM
 
 
 ### 1 Demultiplex pooled fastq data
