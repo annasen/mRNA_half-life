@@ -67,7 +67,7 @@ gedi -e IndexGenome -organism homo_sapiens -version 107 -p
 ```
 /path/to/GRAND-SLAM_2.0.5f/gedi -e Bam2CIT -p mapped.cit /path/to/seq2science/results/final_bam/*.samtools-coordinate.bam
 ```
-There might be an error "No index is available for this BAM file” which means there are missing the .bai files. You can index the bam files with samtools:
+There might be an error `"No index is available for this BAM file”` which means there are missing the .bai files. You can index the bam files with samtools:
 ```
 samtools index *.bam
 ```
