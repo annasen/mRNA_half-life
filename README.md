@@ -31,7 +31,9 @@ The demultiplexed R1 sequences can be copied into a new folder because we will b
 for file in *fastq.gz; do mv "$file" "${file/sample_R1_/}"; done
 ```
 
-Note: In shallow seq low RNA-quality experiments, the sorted fastq files can still contain a lot of R2 reads without the pattern -8 UMI, 6 barcode, polyT- (check with zcat sample_R2.fastq.gz | head -n 40). One can apply more stringent filtering by adding TTTTT at the end of each cell barcode sequence in the barcode_CEL-Seq2_48.tab file. 
+Note: In shallow seq low RNA-quality experiments, the sorted fastq files can still contain a lot of R2 reads without the pattern -8 UMI, 6 barcode, polyT- (check with `zcat sample_R2.fastq.gz | head -n 40`). One can apply more stringent filtering by adding TTTTT at the end of each cell barcode sequence in the barcode_CEL-Seq2_48.tab file. Such sample could look like this: (barcode TGTCGA, algorithm allows one mismatch, only reads 3 and 6 are mRNA reads)
+![Picture1](https://github.com/user-attachments/assets/3e1f8b7a-d4b8-4a9f-9091-7f3682ce857c)
+
 
 ### 2 Mapping by seq2science
 Link to seq2science documentation https://vanheeringen-lab.github.io/seq2science/index.html   
