@@ -56,11 +56,12 @@ remove_dups: true # keep duplicates (check dupRadar in the MultiQC) true if you 
 
 ### 3 GRAND-SLAM
 Link to GRAND-SLAM documentation https://github.com/erhard-lab/gedi/wiki/GRAND-SLAM  
-One needs to apply for the software at the Erhart lab first (takes around 2 weeks) or use one I already have `/vol/moldevbio/veenstra/asenovska/GRAND-SLAM/GRAND-SLAM_2.0.5f/`
+One needs to apply for the software at the Erhart lab first (takes around 2 weeks) or use one I already have `/vol/moldevbio/veenstra/asenovska/GRAND-SLAM/GRAND-SLAM_2.0.5f/`  
 First time users need to download annotation/index for mapping. Current version is 107 (2022/08/16) (https://github.com/erhard-lab/gedi/wiki/Preparing-genomes)
 ```
 gedi -e IndexGenome -organism homo_sapiens -version 107 -p
 ```
+
 
 1. activate a conda environment with java and generate a .cit file, use full pathways
 ```
